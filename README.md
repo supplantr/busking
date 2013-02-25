@@ -12,11 +12,11 @@
 
 ## configuration
 
-__$XDG_CONFIG_HOME/busking/busking.conf__ takes precedence over __/etc/xdg/busking/busking.conf__.
+__$XDG_CONFIG_HOME/busking/config__ takes precedence over __/etc/xdg/busking/config__.
 
-See included busking.conf for a working example.
+See included config for a working example.
 
-### busking.conf options:
+### config options:
 
     # comment
 

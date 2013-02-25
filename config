@@ -5,7 +5,6 @@ terminal                = urxvtc
 
 # @ regex = app (matched against argument given to xdg-open)
 @ ^(https?://|www\.)    = $BROWSER
-@ ^magnet:              = rtorrent->term
 
 # regex = app (matched against mimetype of argument)
 # note: use mimetype -b FILE to determine mimetype

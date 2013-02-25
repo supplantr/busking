@@ -17,14 +17,7 @@ use strict;
 use warnings;
 use File::MimeInfo;
 
-my $CONF_HOME;
-$ENV{'XDG_CONFIG_HOME'}
-    ? $CONF_HOME = $ENV{'XDG_CONFIG_HOME'}
-    : $CONF_HOME = "$ENV{'HOME'}/.config";
-$CONF_HOME .= '/busking/busking.conf';
-my $CONF_ETC = '/etc/xdg/busking/busking.conf';
-
-unless (@ARGV) {
+unless ($ARGV[0]) {
     print "usage: xdg-open [file|directory|protocol]\n";
     exit 1;
 }
@@ -34,14 +27,16 @@ my $arg_mime = mimetype($arg) if -e $arg;
 my ($app, @conf, $terminal);
 
 my $config;
-GET_CONF: {
-    for my $file ($CONF_HOME, $CONF_ETC) {
+GET_CONFIG: {
+    my $config_home = "$ENV{'HOME'}/.config/busking/config";
+    my $config_dirs = '/etc/xdg/busking/config';
+    for my $file ($config_home, $config_dirs) {
         next unless -f $file;
         open($config, '<', $file)
             or die "could not open $file: $!\n";
-        last GET_CONF;
+        last GET_CONFIG;
     }
-    die "error: busking.conf not found\n";
+    die "error: config not found\n";
 }
 
 while (my $line = <$config>) {
