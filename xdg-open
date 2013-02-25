@@ -16,7 +16,6 @@
 use strict;
 use warnings;
 use File::MimeInfo;
-use Tie::File;
 
 my $CONF_HOME;
 $ENV{'XDG_CONFIG_HOME'}
@@ -34,17 +33,18 @@ my $arg = $ARGV[0]; $arg = $1 if $arg =~ m|^file://(.*)|;
 my $arg_mime = mimetype($arg) if -e $arg;
 my ($app, @conf, $terminal);
 
+my $config;
 GET_CONF: {
     for my $file ($CONF_HOME, $CONF_ETC) {
         next unless -f $file;
-        tie @conf, 'Tie::File', $file
+        open($config, '<', $file)
             or die "could not open $file: $!\n";
         last GET_CONF;
     }
     die "error: busking.conf not found\n";
 }
 
-for my $line (@conf) {
+while (my $line = <$config>) {
     next if $line =~ /^#/;
     if ($line =~ /^terminal\s*=\s*(.+)/) {
         $terminal = $1;
@@ -60,7 +60,6 @@ for my $line (@conf) {
     }
     last if $app;
 }
-untie @conf;
 
 if ($app) {
     my @app = split /\s*->\s*/, $app;
