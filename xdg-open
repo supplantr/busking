@@ -40,7 +40,7 @@ GET_CONFIG: {
 }
 
 while (my $line = <$config>) {
-    next if $line =~ /^#/;
+    next if $line =~ /^(\n|#)/;
     if ($line =~ /^terminal\s*=\s*(.+)/) {
         $terminal = $1;
         $terminal = $ENV{"$1"} if $terminal =~ /^\$(.+)/;
