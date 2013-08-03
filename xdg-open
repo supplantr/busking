@@ -43,7 +43,6 @@ while (my $line = <$config>) {
     next if $line =~ /^(\n|#)/;
     if ($line =~ /^terminal\s*=\s*(.+)/) {
         $terminal = $1;
-        $terminal = $ENV{"$1"} if $terminal =~ /^\$(.+)/;
     }
     elsif ($line =~ m|^@\s*(.+[^\s])\s*=\s*(.+)|) {
         my $a = $2;
@@ -58,7 +57,6 @@ while (my $line = <$config>) {
 
 if ($app) {
     my @app = split /\s*->\s*/, $app;
-    $app[0] = $ENV{"$1"} if $app[0] =~ /^\$(.+)/;
     if ($app[1]) {
         if (qx(ps -o stat= -p \$PPID) =~ /^S/
             and qx(ps -o stat= -p \$\$) !~ /\+/) {
