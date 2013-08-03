@@ -8,35 +8,32 @@
 
 ## command-line usage
 
-    usage: xdg-open [file|directory|protocol]
+    usage: xdg-open [file|protocol]
 
 ## configuration
 
 `$HOME/.config/busking/config` takes precedence over `/etc/xdg/busking/config`.
 
-See included `config` for a working example.
+See included `config` for an example.
 
 ### config options
 
-    # comment
+The argument given to `xdg-open` is appended to `cmd`.
 
-is a comment. Inline comments are not valid.
-
-    terminal = app
-
-must precede regex definitions.
-
-    app->term
-
-signifies that app is to be launched in the terminal defined above.
-
-    @ regex = app
+    @regex = cmd
 
 is matched against the argument given to `xdg-open`.
 
-    regex = app
+    regex = cmd
 
-is matched against the mimetype of the argument.
+is matched against the mimetype of the argument. Use `mimetype -b file`
+(provided by File::MimeInfo) to determine mimetype.
 
-**note:** Use `mimetype -b FILE` (provided by File::MimeInfo) to determine
-          mimetype.
+    cmd?:terminal
+
+signifies that `cmd` should be executed in either the current terminal or in a
+new `terminal` (i.e., `terminal -e cmd`).
+
+    #comment
+
+is a comment. Inline comments are not valid.

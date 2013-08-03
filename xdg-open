@@ -18,13 +18,13 @@ use warnings;
 use File::MimeInfo;
 
 unless ($ARGV[0]) {
-    print "usage: xdg-open [file|directory|protocol]\n";
+    print "usage: xdg-open [file|protocol]\n";
     exit 1;
 }
 
-my $arg = $ARGV[0]; $arg = $1 if $arg =~ m|^file://(.*)|;
+my $arg = $ARGV[0];
+$arg = $1 if $arg =~ m|^file://(.*)|;
 my $arg_mime = mimetype($arg) if -e $arg;
-my ($app, @conf, $terminal);
 
 my $config;
 GET_CONFIG: {
@@ -39,36 +39,34 @@ GET_CONFIG: {
     die "error: config not found\n";
 }
 
+my $cmd;
 while (my $line = <$config>) {
     next if $line =~ /^(\n|#)/;
-    if ($line =~ /^terminal\s*=\s*(.+)/) {
-        $terminal = $1;
-    }
-    elsif ($line =~ m|^@\s*(.+[^\s])\s*=\s*(.+)|) {
-        my $a = $2;
-        $app = $a if $arg =~ m|$1|;
+    if ($line =~ m|^@\s*(.+[^\s])\s*=\s*(.+)|) {
+        my $c = $2;
+        $cmd = $c if $arg =~ m|$1|;
     }
     elsif ($arg_mime && $line =~ m|^(.+[^\s])\s*=\s*(.+)|) {
-        my $a = $2;
-        $app = $a if $arg_mime =~ m|$1|;
+        my $c = $2;
+        $cmd = $c if $arg_mime =~ m|$1|;
     }
-    last if $app;
+    last if $cmd;
 }
 
-if ($app) {
-    my @app = split /\s*->\s*/, $app;
-    if ($app[1]) {
+if ($cmd) {
+    if ($cmd =~ /(?<!\\)\?:/) {
+        my @cmd = split /\s*\?:\s*/, $cmd;
         if (qx(ps -o stat= -p \$PPID) =~ /^S/
             and qx(ps -o stat= -p \$\$) !~ /\+/) {
-            die "error: no terminal specified\n" unless $terminal;
-            exec("$terminal -e $app[0] '$arg' &");
+            die "error: no terminal specified\n" unless $cmd[1];
+            exec("$cmd[1] -e $cmd[0] '$arg' &");
         }
         else {
-            exec("$app[0] '$arg'");
+            exec("$cmd[0] '$arg'");
         }
     }
     else {
-        exec("$app[0] '$arg' &> /dev/null &");
+        exec("$cmd '$arg' &> /dev/null &");
     }
 }
 else {
