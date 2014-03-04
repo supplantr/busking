@@ -18,8 +18,8 @@ use warnings;
 use File::MimeInfo;
 
 unless ($ARGV[0]) {
-    print "usage: xdg-open [file|protocol]\n";
-    exit 1;
+	print "usage: xdg-open [file|protocol]\n";
+	exit 1;
 }
 
 my $arg = $ARGV[0];
@@ -28,49 +28,49 @@ my $arg_mime = mimetype($arg) if -e $arg;
 
 my ($config_path, $config);
 GET_CONFIG: {
-    my $home_path = "$ENV{'HOME'}/.config/busking/config";
-    my $dirs_path = '/etc/xdg/busking/config';
-    for my $file ($home_path, $dirs_path) {
-        next unless -f $file;
-        $config_path = $file;
-        open($config, '<', $config_path)
-            or die "error: could not open $config_path: $!\n";
-        last GET_CONFIG;
-    }
-    die "error: config not found\n";
+	my $home_path = "$ENV{'HOME'}/.config/busking/config";
+	my $dirs_path = '/etc/xdg/busking/config';
+	for my $file ($home_path, $dirs_path) {
+		next unless -f $file;
+		$config_path = $file;
+		open($config, '<', $config_path)
+			or die "error: could not open $config_path: $!\n";
+		last GET_CONFIG;
+	}
+	die "error: config not found\n";
 }
 
 my $cmd;
 while (my $line = <$config>) {
-    next if $line =~ /^(\n|#)/;
-    if ($line =~ m|^@\s*(.+[^\s])\s*=\s*(.+)|) {
-        my $c = $2;
-        $cmd = $c if $arg =~ m|$1|;
-    }
-    elsif ($arg_mime && $line =~ m|^(.+[^\s])\s*=\s*(.+)|) {
-        my $c = $2;
-        $cmd = $c if $arg_mime =~ m|$1|;
-    }
-    last if $cmd;
+	next if $line =~ /^(\n|#)/;
+	if ($line =~ m|^@\s*(.+[^\s])\s*=\s*(.+)|) {
+		my $c = $2;
+		$cmd = $c if $arg =~ m|$1|;
+	}
+	elsif ($arg_mime && $line =~ m|^(.+[^\s])\s*=\s*(.+)|) {
+		my $c = $2;
+		$cmd = $c if $arg_mime =~ m|$1|;
+	}
+	last if $cmd;
 }
 
 if ($cmd) {
-    if ($cmd =~ /(?<!\\)\?:/) {
-        my @cmd = split /\s*\?:\s*/, $cmd;
-        if (qx(ps -o stat= -p \$PPID) =~ /^S/
-            and qx(ps -o stat= -p \$\$) !~ /\+/) {
-            die "error: no terminal specified\n" unless $cmd[1];
-            exec("$cmd[1] -e $cmd[0] \"$arg\" &");
-        }
-        else {
-            exec("$cmd[0] \"$arg\"");
-        }
-    }
-    else {
-        exec("$cmd \"$arg\" &> /dev/null &");
-    }
+	if ($cmd =~ /(?<!\\)\?:/) {
+		my @cmd = split /\s*\?:\s*/, $cmd;
+		if (qx(ps -o stat= -p \$PPID) =~ /^S/
+				and qx(ps -o stat= -p \$\$) !~ /\+/) {
+			die "error: no terminal specified\n" unless $cmd[1];
+			exec("$cmd[1] -e $cmd[0] \"$arg\" &");
+		}
+		else {
+			exec("$cmd[0] \"$arg\"");
+		}
+	}
+	else {
+		exec("$cmd \"$arg\" &> /dev/null &");
+	}
 }
 else {
-    print "error: no matching entry found in $config_path\n";
-    exit 2;
+	print "error: no matching entry found in $config_path\n";
+	exit 2;
 }
