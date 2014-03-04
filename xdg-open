@@ -54,17 +54,26 @@ while (my $line = <$config>) {
 	last if $cmd;
 }
 
+sub open_in_terminal {
+	my ($term, $run) = @_;
+	die "error: no terminal specified\n" unless $term;
+	exec("$term -e $run \"$arg\" &");
+}
+
 if ($cmd) {
 	if ($cmd =~ /(?<!\\)\?:/) {
 		my @cmd = split /\s*\?:\s*/, $cmd;
 		if (qx(ps -o stat= -p \$PPID) =~ /^S/
 				and qx(ps -o stat= -p \$\$) !~ /\+/) {
-			die "error: no terminal specified\n" unless $cmd[1];
-			exec("$cmd[1] -e $cmd[0] \"$arg\" &");
+			open_in_terminal($cmd[1], $cmd[0])
 		}
 		else {
 			exec("$cmd[0] \"$arg\"");
 		}
+	}
+	elsif ($cmd =~ /(?<!\\)::/) {
+		my @cmd = split /\s*::\s*/, $cmd;
+		open_in_terminal($cmd[1], $cmd[0])
 	}
 	else {
 		exec("$cmd \"$arg\" &> /dev/null &");

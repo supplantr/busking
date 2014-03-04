@@ -34,6 +34,10 @@ is matched against the mimetype of the argument. Use `mimetype -b file`
 signifies that `cmd` should be executed in either the current terminal or in a
 new `terminal` (i.e., `terminal -e cmd`).
 
+    cmd::terminal
+
+signifies that `cmd` should always be executed in a new `terminal`.
+
     #comment
 
 is a comment. Inline comments are not valid.

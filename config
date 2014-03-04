@@ -1,7 +1,7 @@
 @^(https?://|www\.) = $BROWSER
 image/              = sxiv
 video/              = mplayer
-audio/              = mplayer?:st
+audio/              = mplayer::st
 text/               = $EDITOR?:st
 application/pdf     = zathura
 inode/directory     = ranger?:st
