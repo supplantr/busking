@@ -24,6 +24,7 @@ unless ($ARGV[0]) {
 
 my $arg = $ARGV[0];
 $arg = $1 if $arg =~ m|^file://(.*)|;
+$arg =~ s/%20/ /g;
 my $arg_mime = mimetype($arg) if -e $arg;
 
 my ($config_path, $config);
